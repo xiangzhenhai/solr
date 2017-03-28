@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
@@ -115,7 +116,8 @@ public class DocService {
 		// 搜索数据
 		try {
 			SolrClient client = new HttpSolrClient(solrURL);
-			QueryResponse rsp = client.query(coreName, solrQuery);
+			// METHOD.POST使用post方式提交，避免url过长引起的异常
+			QueryResponse rsp = client.query(coreName, solrQuery, METHOD.POST);
 			SolrDocumentList docs = rsp.getResults();
 
 			// 组装高亮显示搜索结果
