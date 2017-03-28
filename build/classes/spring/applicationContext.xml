@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+            http://www.springframework.org/schema/beans/spring-beans.xsd  
+            http://www.springframework.org/schema/mvc  
+            http://www.springframework.org/schema/mvc/spring-mvc.xsd  
+            http://www.springframework.org/schema/context  
+            http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/aop  
+    		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"    
+	default-autowire="byName">
+
+	<!-- 添加注解驱动 -->
+	<mvc:annotation-driven />
+	<!-- 注解默认扫描的包路径 -->
+	<context:component-scan base-package="com.wdcloud.solr" />	
+	
+	<!-- 加载properties文件配置信息 -->  
+	<bean scope="singleton" id="propertyConfigurer"
+		class="com.wdcloud.solr.util.PropertyPlaceholder">
+		<property name="locations">
+			<list>
+				<value>classpath*:config/statics.properties</value>	
+			</list>			
+		</property>		
+	</bean>
+		
+	<!-- ======================spring AOP配置 start====================== -->
+	
+	<!-- 注入日志拦截器切面 -->
+	<bean id="logAdvice" class="com.wdcloud.solr.util.LogInterceptor"/>
+		
+	<!-- AOP注解自动代理 -->
+	<aop:aspectj-autoproxy/>	
+	
+	<!-- ======================spring AOP配置 end======================== -->  
+	
+	<!-- 为spring注入RestTemplate -->
+	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate"/>      
+	
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<!-- 设置内容协商管理器 -->
+		<property name="contentNegotiationManager" ref="contentNegotiationManager"></property>
+	</bean>
+	
+	<bean id="contentNegotiationManager"
+		class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+		<property name="mediaTypes">
+			<props>
+				<prop key="json">application/json;charset=utf-8</prop>
+				<prop key="xml">application/xml;charset=utf-8</prop>
+			</props>
+		</property>
+		<!-- 设置默认的 ContentType为application/json-->
+		<property name="defaultContentType" value="application/json"></property>
+	</bean>	
+	
+	<mvc:resources location="/" mapping="/**/*.html"/>
+	<mvc:resources location="/" mapping="/**/*.js"/>
+	<mvc:resources location="/" mapping="/**/*.css"/>
+	<mvc:resources location="/" mapping="/**/*.png"/>
+	<mvc:resources location="/" mapping="/**/*.gif"/>
+	
+</beans>
